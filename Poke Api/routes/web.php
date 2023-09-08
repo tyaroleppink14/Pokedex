@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Pages\PokedexPageController;
 use App\Http\Controllers\Pages\TeamPageController;
+use App\Http\Controllers\Pages\TrainerController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -44,6 +45,11 @@ Route::name('team.')->prefix('/team')->middleware(['auth', 'verified'])->group(f
     Route::get('/', [TeamPageController::class, 'index'])->name('index');
     Route::get('/create', [TeamPageController::class, 'create'])->name('create'); // Add this line
 });
+
+Route::get('/trainer/pokemon', [TrainerController::class, 'showPokemonSlots'])->name('trainer.pokemon.slots');
+
+
+
 
 require __DIR__.'/auth.php';
 

@@ -4,6 +4,7 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
+import Pokeball from "../../../resources/IMG/Pokeball.png"
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -16,7 +17,10 @@ export default function Authenticated({ user, header, children }) {
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <img
+                                        src={Pokeball}
+                                        className="w-6 h-6 ml-2"
+                                    />
                                 </Link>
                             </div>
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
@@ -26,13 +30,9 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('pokedex.pokedex')} active={route().current('pokedex.pokedex')}>
                                     Pokedex
                                 </NavLink>
-                                {/* Add Team links */}
-                                {/*<NavLink href={route('team.index')} active={route().current('team.index')}>*/}
-                                {/*    My Team*/}
-                                {/*</NavLink>*/}
-                                {/*<NavLink href={route('team.create')} active={route().current('team.create')}>*/}
-                                {/*    Add Pokemon*/}
-                                {/*</NavLink>*/}
+                                <NavLink href={route('trainer.pokemon.slots')} active={route().current('trainer.pokemon.slots')}>
+                                    Trainer
+                                </NavLink>
                             </div>
                         </div>
 

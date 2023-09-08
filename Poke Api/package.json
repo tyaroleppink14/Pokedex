@@ -24,6 +24,8 @@
     },
     "dependencies": {
         "flowbite": "^1.6.3",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
         "react-router-dom": "^6.15.0"
     }
 }

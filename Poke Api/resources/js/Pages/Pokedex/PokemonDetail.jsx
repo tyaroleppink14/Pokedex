@@ -37,11 +37,10 @@ function SlotSelectionModal(props) {
         }
     )
     const [selectedSlot, setSelectedSlot] = useState(1);
-
-    const handleAddToTeam = async () => {
+    const handleAddToTeam = async (slot) => {
         const updatedPokemon = {
             ...newPokemon,
-            slot: selectedSlot
+            slot: slot
         }
         await fetch('/api/team/create', {
             method: 'POST',
@@ -63,6 +62,7 @@ function SlotSelectionModal(props) {
             .catch((error) => {
                 console.error('Error:', error);
             });
+        return props.setIsSlotSelectionModalOpen(false);
     };
 
     useEffect(() => {
@@ -111,8 +111,7 @@ function SlotSelectionModal(props) {
                                 key={slot}
                                 className="w-32 h-16 m-2 px-4 py-2 rounded-md bg-white text-black border border-black hover:shadow-md flex items-center justify-center"
                                 onClick={() => {
-                                    setSelectedSlot(slot);
-                                    props.setIsSlotSelectionModalOpen(false)
+                                    handleAddToTeam(slot)
                                 }}
                             >
                                 Slot {slot}
@@ -137,7 +136,7 @@ function PokemonDetail(props) {
     const [isSlotSelectionModalOpen, setIsSlotSelectionModalOpen] = useState(false);
 
     return (
-        <div className="bg-white rounded-lg p-4 shadow-md text-black">
+        <div  className="bg-white rounded-lg p-4 shadow-md text-black">
             <div className="mb-4">
                 <button
                     onClick={props.onClose}
