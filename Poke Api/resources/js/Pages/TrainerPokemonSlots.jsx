@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Link, usePage } from '@inertiajs/react';
 
 const TrainerPokemonSlots = ({ pokemonInSlots, auth, errors }) => {
+    const [pokemonSlots, setPokemonSlots] = useState(pokemonInSlots);
+
+    const reorder = (list, startIndex, endIndex) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+        return result;
+    };
+
+    const handleDragEnd = (result) => {
+        if (!result.destination) return;
+
+        const updatedSlots = reorder(
+            pokemonSlots,
+            result.source.index,
+            result.destination.index
+        );
+
+        const updatedPokemonSlots = updatedSlots.map((pokemon, index) => ({
+            ...pokemon,
+            slot: index + 1,
+        }));
+
+        setPokemonSlots(updatedPokemonSlots);
+    };
+
+    pokemonSlots.sort((a, b) => a.slot - b.slot);
+
     return (
         <AuthenticatedLayout user={auth.user} errors={errors}>
             <div className="bg-red-700 min-h-screen py-8" style={{ backgroundColor: '#991B1B' }}>
@@ -13,30 +42,46 @@ const TrainerPokemonSlots = ({ pokemonInSlots, auth, errors }) => {
                         <p className="text-lg text-black">Username: {auth.user.name}</p>
                         <p className="text-lg text-black">Email: {auth.user.email}</p>
                     </div>
-                    <div className="grid grid-cols-6 gap-4">
-                        {pokemonInSlots.sort((a, b) => {return a.slot - b.slot } ).map((pokemon) => (
-                            <div
-                                key={pokemon.slot}
-                                className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center"
-                            >
-                                <strong className="text-2xl font-bold block mb-2">
-                                    Slot {pokemon.slot}
-                                </strong>
-                                <img
-                                    src={pokemon.image ? pokemon.image : ''}
-                                    alt={pokemon.name ? pokemon.name : ''}
-                                    className="max-w-full h-auto mb-2"
-                                    style={{ maxHeight: '200px' }}
-                                />
-                                <p className="text-2xl mb-2 font-bold">
-                                    {pokemon.name ? pokemon.name : ''}
-                                </p>
-                                <p className="text-2xl font-bold mb-2">
-                                    {pokemon.pokemon_id ? `# ${pokemon.pokemon_id}` : ''}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="pokemon-slots" direction="horizontal">
+                            {(provided) => (
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    className="grid grid-cols-6 gap-4"
+                                >
+                                    {pokemonSlots.map((pokemon, index) => (
+                                        <Draggable key={pokemon.slot} draggableId={pokemon.slot.toString()} index={index}>
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center"
+                                                >
+                                                    <strong className="text-2xl font-bold block mb-2">
+                                                        Slot {pokemon.slot}
+                                                    </strong>
+                                                    <img
+                                                        src={pokemon.image ? pokemon.image : ''}
+                                                        alt={pokemon.name ? pokemon.name : ''}
+                                                        className="max-w-full h-auto mb-2"
+                                                        style={{ maxHeight: '200px' }}
+                                                    />
+                                                    <p className="text-2xl mb-2 font-bold">
+                                                        {pokemon.name ? pokemon.name : ''}
+                                                    </p>
+                                                    <p className="text-2xl font-bold mb-2">
+                                                        {pokemon.pokemon_id ? `# ${pokemon.pokemon_id}` : ''}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </div>
             </div>
         </AuthenticatedLayout>

@@ -29,5 +29,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::put('/team/update', [TeamAPIController::class, 'update'])->name('team.update');
+
+
 
 

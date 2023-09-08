@@ -70,4 +70,33 @@ class TeamAPIController extends Controller
 
         return response()->json(['message' => 'Pokemon removed from your team.']);
     }
+    public function update(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'trainer_id' => 'required|integer',
+            'pokemon_id' => 'required|integer',
+            'name' => 'required|string',
+            'slot' => 'required|integer|min:1|max:6',
+            'image' => 'required|string',
+        ]);
+
+        try {
+            $trainer_id = $validated['trainer_id'];
+            $pokemon_id = $validated['pokemon_id'];
+            $slot = $validated['slot'];
+
+            // Update the slot of the Pokémon for the user
+            DB::table('pokemonteam')
+                ->where('trainer_id', $trainer_id)
+                ->where('pokemon_id', $pokemon_id)
+                ->update([
+                    'slot' => $slot,
+                ]);
+
+            return response()->json(['success' => true, 'response' => 'pokemon-slot-updated']);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'response' => $e->getMessage()]);
+        }
+    }
+
 }
