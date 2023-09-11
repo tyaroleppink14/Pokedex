@@ -23,13 +23,14 @@ Route::name('data.')->prefix('/data')->group(function () {
 Route::name('team.')->prefix('/team')->group(function () {
     Route::post('/create', [TeamAPIController::class, 'create'])->name('create.team');
     Route::delete('/destroy/{pokemonId}', [TeamAPIController::class, 'destroy'])->name('destroy.pokemon');
+    Route::post('/update', [TeamAPIController::class, 'update'])->name('update.team');
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::put('/team/update', [TeamAPIController::class, 'update'])->name('team.update');
+
 
 
 

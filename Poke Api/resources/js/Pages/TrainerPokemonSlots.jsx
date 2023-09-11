@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Link, usePage } from '@inertiajs/react';
+import axios from 'axios'; // Import Axios
 
 const TrainerPokemonSlots = ({ pokemonInSlots, auth, errors }) => {
     const [pokemonSlots, setPokemonSlots] = useState(pokemonInSlots);
@@ -30,7 +31,29 @@ const TrainerPokemonSlots = ({ pokemonInSlots, auth, errors }) => {
         setPokemonSlots(updatedPokemonSlots);
     };
 
-    pokemonSlots.sort((a, b) => a.slot - b.slot);
+    const updatePokemonSlots = async () => {
+        try {
+            console.log(pokemonSlots);
+            const response = await axios.post('/api/team/update', {
+                newSlots: pokemonSlots,
+            });
+
+            console.log('Response from server:', response.data); // Log the response
+
+            if (response.data.success) {
+                console.log('Pokémon slots updated successfully.');
+            } else {
+                console.error('Failed to update Pokémon slots:', response.data.response);
+            }
+        } catch (error) {
+            console.error('An error occurred while updating Pokémon slots:', error);
+        }
+    };
+
+    useEffect(() => {
+        // Sort the slots based on their slot numbers
+        pokemonSlots.sort((a, b) => a.slot - b.slot);
+    }, [pokemonSlots]);
 
     return (
         <AuthenticatedLayout user={auth.user} errors={errors}>
@@ -82,6 +105,9 @@ const TrainerPokemonSlots = ({ pokemonInSlots, auth, errors }) => {
                             )}
                         </Droppable>
                     </DragDropContext>
+                    <button onClick={updatePokemonSlots} className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Save Changes
+                    </button>
                 </div>
             </div>
         </AuthenticatedLayout>

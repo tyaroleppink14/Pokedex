@@ -11,6 +11,14 @@ class PokemonTeam extends Model
 
     protected $table = 'pokemonteam';
 
+    protected $fillable = [
+        "trainer_id",
+        "name",
+        "slot",
+        "image",
+        "pokemon_id"
+    ];
+
     public function user()
     {
         return $this->hasOne(User::class);

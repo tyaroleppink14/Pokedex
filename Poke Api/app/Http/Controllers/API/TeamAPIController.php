@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\PokemonTeam;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Models\TrainerPokemonSlot;
 
 class TeamAPIController extends Controller
 {
@@ -70,32 +71,28 @@ class TeamAPIController extends Controller
 
         return response()->json(['message' => 'Pokemon removed from your team.']);
     }
-    public function update(Request $request): JsonResponse
+    public function update(Request $request)
     {
-        $validated = $request->validate([
-            'trainer_id' => 'required|integer',
-            'pokemon_id' => 'required|integer',
-            'name' => 'required|string',
-            'slot' => 'required|integer|min:1|max:6',
-            'image' => 'required|string',
-        ]);
 
         try {
-            $trainer_id = $validated['trainer_id'];
-            $pokemon_id = $validated['pokemon_id'];
-            $slot = $validated['slot'];
+            $newSlots = $request->newSlots;
 
-            // Update the slot of the Pokémon for the user
-            DB::table('pokemonteam')
-                ->where('trainer_id', $trainer_id)
-                ->where('pokemon_id', $pokemon_id)
-                ->update([
-                    'slot' => $slot,
+            // Update the slots in the database based on the trainer_id and newSlots.
+            foreach ($newSlots as $pokemon) {
+                // If no existing slot is found, create a new one
+                DB::table('pokemonteam')
+                    ->where('trainer_id', $pokemon['trainer_id'])
+                    ->where('slot', $pokemon['slot'])
+                    ->update([
+                        'pokemon_id' => $pokemon['pokemon_id'],
+                        'name' => $pokemon['name'],
+                        'image' => $pokemon['image'],
                 ]);
+            }
 
-            return response()->json(['success' => true, 'response' => 'pokemon-slot-updated']);
-        } catch (Exception $e) {
-            return response()->json(['success' => false, 'response' => $e->getMessage()]);
+            return response()->json(['success' => true, 'response' => 'pokemon-slots-updated']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 
